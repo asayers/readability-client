@@ -2,6 +2,7 @@
 
 require 'readit'
 require 'netrc'
+require 'html_massage'
 require './reverse_markdown'
 
 CONSUMER_KEY = "asayers"
@@ -16,7 +17,7 @@ def get_article(bookmark)
   fname = "#{title.gsub(/ /, "_").gsub(/[^0-9A-Za-z_-]/, '')}"
   puts "Downloading '#{title}'..."
   unless Dir.entries(STORAGE_DIR).include? "#{fname}.md"
-    article = ReverseMarkdown.parse(@api.article(bookmark["article"]["id"]).content)
+    article = HtmlMassage.markdown(@api.article(bookmark["article"]["id"]).content)
     File.open("#{STORAGE_DIR}/#{fname}.md", 'w') do |f|
       f.puts article
     end
@@ -31,7 +32,7 @@ Readit::Config.consumer_key     = CONSUMER_KEY
 Readit::Config.consumer_secret  = CONSUMER_SECRET
 @api = Readit::API.new(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 recents = @api.bookmarks(include_meta: true)
-pages = recents.last.num_pages
+pages = recents.pop.num_pages
 
 case ARGV[0]
 when "-h"
@@ -45,7 +46,8 @@ when "-c"
     end
   end
 else
-  recents.each do |bookmark|
+  @bookmarks = @api.bookmarks()
+  @bookmarks.each do |bookmark|
     get_article bookmark
   end
 end
