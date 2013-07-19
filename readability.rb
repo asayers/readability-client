@@ -3,7 +3,6 @@
 require 'readit'
 require 'netrc'
 require 'html_massage'
-require './reverse_markdown'
 
 CONSUMER_KEY = "asayers"
 CONSUMER_SECRET = "UncvtGWgfn8PXBzchWAmxcDqJSKa6qfC"
